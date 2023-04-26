@@ -1,0 +1,45 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <form method="POST">
+            {% csrf_token %}
+        <!-- First dropdown -->
+        <label>Product</label>
+        <input type="text" value="{{ name }}">
+<select id="brand" onchange="updateModels()">
+    <option value="">Select a brand</option>
+    {% for brand in brands %}
+        <option value="{{ brand.pk }}">{{ brand.name }}</option>
+    {% endfor %}
+</select>
+
+<!-- Second dropdown -->
+<select id="model">
+    <option value="">Select a model</option>
+</select>
+<button type="submit">Submit</submit>
+</form>
+<!-- JavaScript to update second dropdown based on selected brand -->
+<script>
+    function updateModels() {
+        var brand_id = document.getElementById("brand").value;
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/get_models/?brand_id=" + brand_id, true);
+        xhr.onload = function () {
+            var models = JSON.parse(xhr.responseText);
+            var model_select = document.getElementById("model");
+            model_select.innerHTML = '<option value="">Select a model</option>';
+            for (var i = 0; i < models.length; i++) {
+                var option = document.createElement("option");
+                option.value = models[i].pk;
+                option.text = models[i].name;
+                model_select.appendChild(option);
+            }
+        };
+        xhr.send();
+    }
+</script>
+
+    </body>
+    </html>
